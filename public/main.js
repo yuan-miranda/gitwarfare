@@ -129,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     keys = {};
     window.addEventListener('keydown', (e) => {
         keys[e.key.toLowerCase()] = true;
-        if (e.key === ' ') player.hp = Math.max(0, player.hp - 10);
     });
     window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
     window.addEventListener('resize', resizeCanvas);
@@ -263,7 +262,7 @@ function drawHealthBar() {
     ctx.strokeRect(barX, barY, barWidth, barHeight);
 
     ctx.fillStyle = 'black';
-    ctx.font = '14px Arial';
+    ctx.font = '16px Arial';
     ctx.fillText(`HP: ${player.hp}/${player.maxHp}`, barX + barWidth + 8, barY + 12);
 }
 
@@ -312,8 +311,6 @@ function draw() {
     ctx.fillStyle = 'black';
     ctx.font = '16px Arial';
     ctx.fillText(`Position: (${Math.round(player.x)}, ${Math.round(player.y)})`, 10, 65);
-    ctx.fillText('Controls: WASD/Arrow Keys or Touch', 10, 85);
-    ctx.fillText('Press SPACEBAR to test damage', 10, 105);
 }
 
 // Game loop
