@@ -1,5 +1,86 @@
 // Game variables
-let canvas, ctx, player, camera, keys, mobileControls;
+let canvas, ctx, player, camera, keys, mobileControls, gameStarted = false;
+
+// Check if device is mobile
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           (window.innerWidth <= 768);
+}
+
+// Check if mobile prompt should be shown
+function shouldShowMobilePrompt() {
+    return isMobile() && !localStorage.getItem('hideMobilePrompt');
+}
+
+// Show mobile setup prompt
+function showMobilePrompt() {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    `;
+    
+    const promptBox = document.createElement('div');
+    promptBox.style.cssText = `
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        text-align: center;
+        max-width: 25rem;
+        margin: 1rem;
+    `;
+    
+    promptBox.innerHTML = `
+        <h2 style="margin: 0 0 1rem 0; color: #333;">Mobile Setup Required</h2>
+        <p style="margin: 0 0 1rem 0; color: #666; line-height: 1.4;">
+            For the best gaming experience:<br><br>
+            1. Enable <strong>Desktop Mode</strong> in your browser<br>
+            2. Set browser zoom to <strong>50%</strong><br>
+            3. Use landscape orientation
+        </p>
+        <div style="margin: 1rem 0; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <input type="checkbox" id="neverShowAgain" style="margin: 0;">
+            <label for="neverShowAgain" style="margin: 0; font-size: 0.9rem; color: #666; cursor: pointer;">
+                Don't show this again
+            </label>
+        </div>
+        <button id="startGame" style="
+            background: #4a9;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+        ">Start Game</button>
+    `;
+    
+    overlay.appendChild(promptBox);
+    document.body.appendChild(overlay);
+    
+    document.getElementById('startGame').addEventListener('click', () => {
+        const checkbox = document.getElementById('neverShowAgain');
+        if (checkbox.checked) {
+            localStorage.setItem('hideMobilePrompt', 'true');
+        }
+        document.body.removeChild(overlay);
+        gameStarted = true;
+        startGame();
+    });
+}
+
+function startGame() {
+    // Start the game
+    gameLoop();
+}
 
 // Initialize game when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -95,7 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Start the game
-    gameLoop();
+    if (shouldShowMobilePrompt()) {
+        showMobilePrompt();
+    } else {
+        gameStarted = true;
+        startGame();
+    }
 });
 
 function update() {
@@ -226,6 +312,7 @@ function draw() {
 
 // Game loop
 function gameLoop() {
+    if (!gameStarted) return;
     update();
     draw();
     requestAnimationFrame(gameLoop);
