@@ -3,8 +3,8 @@ let canvas, ctx, player, camera, keys, mobileControls, gameStarted = false;
 
 // Check if device is mobile
 function isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-           (window.innerWidth <= 768);
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (window.innerWidth <= 768);
 }
 
 // Check if mobile prompt should be shown
@@ -27,7 +27,7 @@ function showMobilePrompt() {
         justify-content: center;
         z-index: 1000;
     `;
-    
+
     const promptBox = document.createElement('div');
     promptBox.style.cssText = `
         background: white;
@@ -37,7 +37,7 @@ function showMobilePrompt() {
         max-width: 25rem;
         margin: 1rem;
     `;
-    
+
     promptBox.innerHTML = `
         <h2 style="margin: 0 0 1rem 0; color: #333;">Mobile Setup Required</h2>
         <p style="margin: 0 0 1rem 0; color: #666; line-height: 1.4;">
@@ -62,10 +62,10 @@ function showMobilePrompt() {
             cursor: pointer;
         ">Start Game</button>
     `;
-    
+
     overlay.appendChild(promptBox);
     document.body.appendChild(overlay);
-    
+
     document.getElementById('startGame').addEventListener('click', () => {
         const checkbox = document.getElementById('neverShowAgain');
         if (checkbox.checked) {
@@ -153,18 +153,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = canvas.getBoundingClientRect();
         mobileControls.touchX = touch.clientX - rect.left;
         mobileControls.touchY = touch.clientY - rect.top;
-        
+
         // Calculate movement vector
         const deltaX = mobileControls.touchX - mobileControls.centerX;
         const deltaY = mobileControls.touchY - mobileControls.centerY;
         const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         const maxDistance = mobileControls.size / 2;
-        
+
         if (distance > maxDistance) {
             mobileControls.touchX = mobileControls.centerX + (deltaX / distance) * maxDistance;
             mobileControls.touchY = mobileControls.centerY + (deltaY / distance) * maxDistance;
         }
-        
+
         mobileControls.moveX = (mobileControls.touchX - mobileControls.centerX) / maxDistance;
         mobileControls.moveY = (mobileControls.touchY - mobileControls.centerY) / maxDistance;
     });
@@ -243,19 +243,19 @@ function drawGrid() {
 function drawHealthBar() {
     const barWidth = 256, barHeight = 16, barX = 16, barY = 16;
     const healthPercent = player.hp / player.maxHp;
-    
+
     // Background and health
     ctx.fillStyle = '#333';
     ctx.fillRect(barX, barY, barWidth, barHeight);
-    
+
     ctx.fillStyle = healthPercent > 0.3 ? '#4a9' : '#e44';
     ctx.fillRect(barX, barY, barWidth * healthPercent, barHeight);
-    
+
     // Border and text
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 2;
     ctx.strokeRect(barX, barY, barWidth, barHeight);
-    
+
     ctx.fillStyle = 'black';
     ctx.font = '14px Arial';
     ctx.fillText(`HP: ${player.hp}/${player.maxHp}`, barX + barWidth + 8, barY + 12);
@@ -263,11 +263,11 @@ function drawHealthBar() {
 
 function drawMobileControls() {
     if (!mobileControls.active) return;
-    
+
     const centerX = mobileControls.centerX;
     const centerY = mobileControls.centerY;
     const radius = mobileControls.size / 2;
-    
+
     // Outer circle
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
@@ -276,7 +276,7 @@ function drawMobileControls() {
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-    
+
     // Inner circle
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.beginPath();
