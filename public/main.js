@@ -137,13 +137,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile touch controls
     canvas.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        const touch = e.touches[0];
-        const rect = canvas.getBoundingClientRect();
-        mobileControls.active = true;
-        mobileControls.centerX = touch.clientX - rect.left;
-        mobileControls.centerY = touch.clientY - rect.top;
-        mobileControls.touchX = mobileControls.centerX;
-        mobileControls.touchY = mobileControls.centerY;
+        // Only create new joystick if one isn't already active
+        if (!mobileControls.active) {
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            mobileControls.active = true;
+            mobileControls.centerX = touch.clientX - rect.left;
+            mobileControls.centerY = touch.clientY - rect.top;
+            mobileControls.touchX = mobileControls.centerX;
+            mobileControls.touchY = mobileControls.centerY;
+        }
     });
 
     canvas.addEventListener('touchmove', (e) => {
@@ -171,8 +174,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     canvas.addEventListener('touchend', (e) => {
         e.preventDefault();
-        mobileControls.active = false;
-        mobileControls.moveX = mobileControls.moveY = 0;
+        // Only deactivate if no touches remain
+        if (e.touches.length === 0) {
+            mobileControls.active = false;
+            mobileControls.moveX = mobileControls.moveY = 0;
+        }
     });
 
     // Start the game
