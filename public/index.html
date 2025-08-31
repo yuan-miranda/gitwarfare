@@ -3,21 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Git Warfare</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            overflow: hidden;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="mobileSetup.css">
 </head>
 
 <body>
-    <script src="main.js"></script>
+    <div class="overlay">
+        <div id="mobileSetupPrompt">
+            <h2>Mobile Setup Required</h2>
+            <p>
+                For the best gaming experience:<br><br>
+                1. Enable <strong>Desktop Mode</strong> in your browser<br>
+                2. Set browser zoom to <strong>50%</strong><br>
+                3. Use landscape orientation
+            </p>
+            <div id="mobileSetupActions">
+                <div>
+                    <input type="checkbox" id="mobileSetupClose">
+                    <label for="mobileSetupClose">Don't show again</label>
+                </div>
+
+                <button id="mobileSetupConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/new.js"></script>
 </body>
 
 </html>

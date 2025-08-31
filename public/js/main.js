@@ -2,14 +2,14 @@
 let canvas, ctx, player, camera, keys, mobileControls, gameStarted = false;
 
 // Check if device is mobile
-function isMobile() {
+function isMobileUserAgent() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
         (window.innerWidth <= 768);
 }
 
 // Check if mobile prompt should be shown
 function shouldShowMobilePrompt() {
-    return isMobile() && !localStorage.getItem('hideMobilePrompt');
+    return isMobileUserAgent() && !localStorage.getItem('hideMobilePrompt');
 }
 
 // Show mobile setup prompt
