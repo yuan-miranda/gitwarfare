@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import MainScene from "./scenes/MainScene.js";
 import PauseOverlay from "./ui/PauseOverlay.js";
+import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js';
 
 const config = {
     parent: 'app',
@@ -25,7 +26,16 @@ const config = {
             },
         }
     },
-    scene: [MainScene, PauseOverlay]
+    scene: [MainScene, PauseOverlay],
+    plugins: {
+        scene: [
+            {
+                key: 'rexVirtualJoystick',
+                plugin: VirtualJoystickPlugin,
+                mapping: 'joystick'
+            }
+        ]
+    }
 };
 
 new Phaser.Game(config);

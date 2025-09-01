@@ -33,6 +33,14 @@ export default class MainScene extends Phaser.Scene {
         this.cursors = this.input.keyboard?.createCursorKeys();
         this.keys = this.input.keyboard?.addKeys('W,A,S,D');
 
+        this.joystick = this.joystick.add(this, {
+            x: this.cameras.main.width / 2,
+            y: this.cameras.main.height - 80,
+            radius: 50,
+            base: this.add.circle(0, 0, 50, 0x888888, 0.4),
+            thumb: this.add.circle(0, 0, 25, 0xffffff, 0.7),
+        });
+
         // enemies
         this.enemies = this.physics.add.group({
             key: 'enemy',
@@ -101,6 +109,11 @@ export default class MainScene extends Phaser.Scene {
         if (this.cursors?.right.isDown || this.keys.D.isDown) vx += 1;
         if (this.cursors?.up.isDown || this.keys.W.isDown) vy -= 1;
         if (this.cursors?.down.isDown || this.keys.S.isDown) vy += 1;
+
+        if (this.joystick.force > 0) {
+            vx += this.joystick.forceX;
+            vy += this.joystick.forceY;
+        }
 
         if (vx !== 0 || vy !== 0) {
             const len = Math.sqrt(vx * vx + vy * vy);
