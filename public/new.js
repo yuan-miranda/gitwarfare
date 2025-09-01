@@ -23,6 +23,7 @@ function eventListeners() {
     });
 }
 
+
 document.addEventListener("DOMContentLoaded", function () {
     showMobileSetupPrompt();
     eventListeners();
