@@ -1,0 +1,15 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    background: #111;
+}
+
+canvas {
+    display: block;
+    margin: auto;
+}
+
+pre {
+    color: white;
+}

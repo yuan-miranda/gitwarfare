@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Warfare</title>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+
+<body>
+    <a
+        href="https://github.com/login/oauth/authorize?client_id=Ov23lisLkkAeYQ3SQ1RQ&redirect_uri=https://gitwarfare.vercel.app/api/auth/callback/github&scope=user:email">
+        <button>Login with GitHub</button>
+    </a>
+    <pre id="github-data"></pre>
+
+
+    <div id="app"></div>
+    <script type="module">
+        async function fetchGitHubData() {
+            try {
+                const response = await fetch('/api/auth/callback/github');
+                if (!response.ok) throw new Error('Failed to fetch');
+
+                const data = await response.json();
+                const pre = document.getElementById('github-data');
+
+                pre.textContent = `Hello, ${data.user.login}\n\nYour commits:\n${JSON.stringify(data.commits, null, 2)}`;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('github-data').textContent = 'Failed to fetch GitHub data.';
+            }
+        }
+
+        fetchGitHubData();
+    </script>
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
