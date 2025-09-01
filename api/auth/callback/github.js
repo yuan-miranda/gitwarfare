@@ -9,6 +9,7 @@ export default async function handler(req, res) {
     if (!code) return res.status(400).json({ error: "Code is required" });
 
     try {
+        console.log('CLIENT_SECRET:', CLIENT_SECRET);
         const tokenResponse = await axios.post(
             "https://github.com/login/oauth/access_token",
             {
