@@ -24,22 +24,34 @@ export default async function handler(req, res) {
             headers: { Authorization: `token ${accessToken}` },
         });
 
-        const { login, location } = userResponse.data;
+        const { login } = userResponse.data;
 
-        // fetch user data
-        const eventsResponse = await axios.get(
-            `https://api.github.com/users/${login}/events`,
-            { headers: { Authorization: `token ${accessToken}` } }
+        const graphQLQuery = `
+        query {
+            user(login: "${login}") {
+            name
+            location
+            contributionsCollection {
+                contributionCalendar {
+                totalContributions
+                }
+            }
+            }
+        }`;
+
+        const graphQLResponse = await axios.post(
+            "https://api.github.com/graphql",
+            { query: graphQLQuery },
+            { headers: { Authorization: `bearer ${accessToken}` } }
         );
 
-        const totalCommits = eventsResponse.data
-            .filter(event => event.type === "PushEvent")
-            .reduce((sum, event) => sum + event.payload.commits.length, 0);
+        const userData = graphQLResponse.data.data.user;
 
         res.status(200).json({
             username: login,
-            location: location || "Unknown",
-            totalCommits
+            name: userData.name,
+            location: userData.location || "Unknown",
+            totalContributions: userData.contributionsCollection.contributionCalendar.totalContributions,
         });
     } catch (error) {
         console.error(error);
