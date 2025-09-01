@@ -50,15 +50,22 @@ export default async function handler(req, res) {
 
         const weeks = graphQLResponse.data.data.user.contributionsCollection.contributionCalendar.weeks;
 
-        // Flatten days and remove days with 0 contributions
         const contributionsByDay = weeks
             .flatMap(week => week.contributionDays)
-            .filter(day => day.contributionCount > 0)
-            .map(day => ({ date: day.date, totalCommits: day.contributionCount }));
+            .filter(day => day.contributionCount > 0);
+
+        const contributionsByYear = {};
+
+        contributionsByDay.forEach(day => {
+            const [year, month, date] = day.date.split("-");
+            if (!contributionsByYear[year]) contributionsByYear[year] = {};
+            if (!contributionsByYear[year][month]) contributionsByYear[year][month] = {};
+            contributionsByYear[year][month][date] = day.contributionCount;
+        });
 
         res.status(200).json({
             username: login,
-            contributionsByDay
+            contributions: contributionsByYear
         });
     } catch (error) {
         console.error(error);
