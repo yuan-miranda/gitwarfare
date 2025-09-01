@@ -24,49 +24,7 @@ export default async function handler(req, res) {
             headers: { Authorization: `token ${accessToken}` },
         });
 
-        const { login } = userResponse.data;
-
-        const graphQLQuery = `
-        query {
-            user(login: "${login}") {
-            contributionsCollection {
-                contributionCalendar {
-                weeks {
-                    contributionDays {
-                    date
-                    contributionCount
-                    }
-                }
-                }
-            }
-            }
-        }`;
-
-        const graphQLResponse = await axios.post(
-            "https://api.github.com/graphql",
-            { query: graphQLQuery },
-            { headers: { Authorization: `bearer ${accessToken}` } }
-        );
-
-        const weeks = graphQLResponse.data.data.user.contributionsCollection.contributionCalendar.weeks;
-
-        const contributionsByDay = weeks
-            .flatMap(week => week.contributionDays)
-            .filter(day => day.contributionCount > 0);
-
-        const contributionsByYear = {};
-
-        contributionsByDay.forEach(day => {
-            const [year, month, date] = day.date.split("-");
-            if (!contributionsByYear[year]) contributionsByYear[year] = {};
-            if (!contributionsByYear[year][month]) contributionsByYear[year][month] = {};
-            contributionsByYear[year][month][date] = day.contributionCount;
-        });
-
-        res.status(200).json({
-            username: login,
-            contributions: contributionsByYear
-        });
+        res.status(200).json({ user: userResponse.data });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
