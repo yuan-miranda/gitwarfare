@@ -12,28 +12,35 @@
     <a href="https://github.com/login/oauth/authorize?client_id=Ov23lisLkkAeYQ3SQ1RQ&scope=user:email">
         <button>Login with GitHub</button>
     </a>
-    <pre id="github-data">Loading...</pre>
-
 
     <div id="app"></div>
+    </script>
     <script type="module">
-        async function fetchGitHubData() {
-            try {
-                const response = await fetch('/api/auth/callback/github');
-                if (!response.ok) throw new Error('Failed to fetch');
-
-                const data = await response.json();
-                const pre = document.getElementById('github-data');
-
-                pre.textContent = `Hello, ${data.user.login}\n\nYour commits:\n${JSON.stringify(data.commits, null, 2)}`;
-            } catch (err) {
-                console.error(err);
-                document.getElementById('github-data').textContent = 'Failed to fetch GitHub data.';
+        function checkUserFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const userData = params.get('user');
+            if (userData) {
+                localStorage.setItem('github_user', userData);
+                // Remove user param from URL
+                window.history.replaceState({}, document.title, "/");
             }
         }
 
-        fetchGitHubData();
+        function loadUser() {
+            const storedUser = localStorage.getItem('github_user');
+            if (storedUser) {
+                const user = JSON.parse(decodeURIComponent(storedUser));
+                document.body.insertAdjacentHTML(
+                    'afterbegin',
+                    `<p>Welcome, ${user.login}!</p>`
+                );
+            }
+        }
+
+        checkUserFromURL();
+        loadUser();
     </script>
+
     <script type="module" src="/src/main.js"></script>
 </body>
 

@@ -24,7 +24,8 @@ export default async function handler(req, res) {
             headers: { Authorization: `token ${accessToken}` },
         });
 
-        res.status(200).json({ user: userResponse.data });
+        const userData = encodeURIComponent(JSON.stringify(userResponse.data));
+        res.redirect(`/?user=${userData}`);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
