@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <a href="https://github.com/login/oauth/authorize?client_id=Ov23lisLkkAeYQ3SQ1RQ&scope=user:email">
+    <a href="https://github.com/login/oauth/authorize?client_id=Ov23lisLkkAeYQ3SQ1RQ&scope=user:email" id="githubLogin">
         <button>Login with GitHub</button>
     </a>
 
@@ -21,24 +21,10 @@
             const userData = params.get('user');
             if (userData) {
                 localStorage.setItem('github_user', userData);
-                // Remove user param from URL
-                window.history.replaceState({}, document.title, "/");
+                window.location.href = "/";
             }
         }
-
-        function loadUser() {
-            const storedUser = localStorage.getItem('github_user');
-            if (storedUser) {
-                const user = JSON.parse(decodeURIComponent(storedUser));
-                document.body.insertAdjacentHTML(
-                    'afterbegin',
-                    `<p>Welcome, ${user.login}!</p>`
-                );
-            }
-        }
-
         checkUserFromURL();
-        loadUser();
     </script>
 
     <script type="module" src="/src/main.js"></script>

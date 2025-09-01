@@ -2,7 +2,6 @@ body,
 html {
     margin: 0;
     padding: 0;
-    background: #111;
 }
 
 canvas {
@@ -10,6 +9,9 @@ canvas {
     margin: auto;
 }
 
-pre {
-    color: white;
+#githubLogin {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1;
 }
