@@ -29,11 +29,14 @@ export default async function handler(req, res) {
         const graphQLQuery = `
         query {
             user(login: "${login}") {
-            name
-            location
             contributionsCollection {
                 contributionCalendar {
-                totalContributions
+                weeks {
+                    contributionDays {
+                    date
+                    contributionCount
+                    }
+                }
                 }
             }
             }
@@ -45,13 +48,17 @@ export default async function handler(req, res) {
             { headers: { Authorization: `bearer ${accessToken}` } }
         );
 
-        const userData = graphQLResponse.data.data.user;
+        const weeks = graphQLResponse.data.data.user.contributionsCollection.contributionCalendar.weeks;
+
+        // Flatten days and remove days with 0 contributions
+        const contributionsByDay = weeks
+            .flatMap(week => week.contributionDays)
+            .filter(day => day.contributionCount > 0)
+            .map(day => ({ date: day.date, totalCommits: day.contributionCount }));
 
         res.status(200).json({
             username: login,
-            name: userData.name,
-            location: userData.location || "Unknown",
-            totalContributions: userData.contributionsCollection.contributionCalendar.totalContributions,
+            contributionsByDay
         });
     } catch (error) {
         console.error(error);
