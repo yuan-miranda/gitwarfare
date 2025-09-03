@@ -1,4 +1,12 @@
 export const GAME_CONFIG = {
     PLAYER_SPEED: 200,
-    CAMERA_BOUNDS: { width: 640, height: 480 }
+    WORLD_BOUNDS: {
+        width: 2000,
+        height: 2000
+    },
+    ENEMIES: {
+        COUNT: 10,
+        MIN_SPEED: -50,
+        MAX_SPEED: 100
+    }
 };

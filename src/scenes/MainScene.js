@@ -1,9 +1,10 @@
 // src/scenes/MainScene.js
 import Phaser from "phaser";
 import { createPlayer } from "../entities/player.js";
-import { createEnemies } from "../entities/enemies.js";
+import { createEnemies, enableEnemyCollisions } from "../entities/enemies.js";
 import { createJoystick } from "../ui/joystick.js";
 import { GAME_CONFIG } from "../config/constants.js";
+import { cameraFollow } from "../camera/cameraFollow.js";
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -29,9 +30,20 @@ export default class MainScene extends Phaser.Scene {
         this.score = 0;
         this.isPaused = false;
 
+        this.physics.world.setBounds(0, 0, GAME_CONFIG.WORLD_BOUNDS.width, GAME_CONFIG.WORLD_BOUNDS.height);
+
         // player
-        this.player = createPlayer(this);
+        this.player = createPlayer(this, GAME_CONFIG.WORLD_BOUNDS.width / 2, GAME_CONFIG.WORLD_BOUNDS.height / 2);
+        cameraFollow(this, this.player);
+
+        // enemies
         this.enemies = createEnemies(this);
+        enableEnemyCollisions(this, this.enemies);
+
+        // world border
+        const worldBorder = this.add.graphics();
+        worldBorder.lineStyle(4, 0xffffff);
+        worldBorder.strokeRect(0, 0, GAME_CONFIG.WORLD_BOUNDS.width, GAME_CONFIG.WORLD_BOUNDS.height);
 
         // particles
         this.particleBurst = this.add.particles(0, 0, 'enemy', {
@@ -50,13 +62,6 @@ export default class MainScene extends Phaser.Scene {
             this.handlePlayerEnemyCollision,
             undefined,
             this
-        );
-
-        // camera
-        this.cameras.main.setBounds(
-            0, 0,
-            GAME_CONFIG.CAMERA_BOUNDS.width,
-            GAME_CONFIG.CAMERA_BOUNDS.height
         );
 
         // input

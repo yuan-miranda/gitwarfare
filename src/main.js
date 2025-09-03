@@ -6,10 +6,8 @@ import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-p
 const config = {
     parent: 'app',
     scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 640,
-        height: 480
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.NO_CENTER,
     },
     physics: {
         default: 'arcade',
