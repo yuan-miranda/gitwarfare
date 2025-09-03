@@ -1,5 +1,5 @@
+// src/scenes/PauseOverlay.js
 import Phaser from "phaser";
-
 export default class PauseOverlay extends Phaser.Scene {
     constructor() {
         super('PauseOverlay');
@@ -30,23 +30,5 @@ export default class PauseOverlay extends Phaser.Scene {
         });
 
         this.pauseOverlay.add([background, pauseText, resumeBtn]);
-    }
-
-    togglePause() {
-        this.pauseOverlay?.setVisible(!this.pauseOverlay.visible);
-    }
-
-    resizeUI() {
-        const { width, height } = this.scale;
-        if (!this.pauseOverlay) return;
-
-        const background = this.pauseOverlay.getAt(0);
-        const text = this.pauseOverlay.getAt(1);
-        const resumeBtn = this.pauseOverlay.getAt(2);
-
-        background.setSize(width, height);
-        background.setPosition(width / 2, height / 2);
-        text.setPosition(width / 2, height / 2 - 20);
-        resumeBtn.setPosition(width / 2, height / 2 + 30);
     }
 }

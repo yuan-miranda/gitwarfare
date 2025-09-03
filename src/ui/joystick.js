@@ -1,0 +1,10 @@
+export function createJoystick(scene) {
+    return scene.joystick.add(scene, {
+        x: scene.cameras.main.width / 2,
+        y: scene.cameras.main.height - 80,
+        radius: 50,
+        base: scene.add.circle(0, 0, 50, 0x888888, 0.4),
+        thumb: scene.add.circle(0, 0, 25, 0xffffff, 0.7),
+        forceMin: 0
+    });
+}

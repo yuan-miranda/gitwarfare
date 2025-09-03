@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import MainScene from "./scenes/MainScene.js";
-import PauseOverlay from "./ui/PauseOverlay.js";
+import PauseOverlay from "./scenes/PauseOverlay.js";
 import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js';
 
 const config = {
@@ -8,14 +8,8 @@ const config = {
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        min: {
-            width: 320,
-            height: 240
-        },
-        max: {
-            width: 1920,
-            height: 1080
-        }
+        width: 640,
+        height: 480
     },
     physics: {
         default: 'arcade',
@@ -38,4 +32,4 @@ const config = {
     }
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);

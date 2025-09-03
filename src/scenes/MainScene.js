@@ -1,4 +1,9 @@
+// src/scenes/MainScene.js
 import Phaser from "phaser";
+import { createPlayer } from "../entities/player.js";
+import { createEnemies } from "../entities/enemies.js";
+import { createJoystick } from "../ui/joystick.js";
+import { GAME_CONFIG } from "../config/constants.js";
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -6,15 +11,18 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        const playerTexture = this.make.graphics({ x: 0, y: 0 });
-        playerTexture.fillStyle(0xffffff, 1);
-        playerTexture.fillRect(0, 0, 16, 16);
-        playerTexture.generateTexture('player', 16, 16);
+        this.createTextures();
+    }
 
-        const enemyTexture = this.make.graphics({ x: 0, y: 0 });
-        enemyTexture.fillStyle(0x56D364, 1);
-        enemyTexture.fillRect(0, 0, 16, 16);
-        enemyTexture.generateTexture('enemy', 16, 16);
+    createTextures() {
+        const createRectTexture = (key, color) => {
+            const g = this.make.graphics({ x: 0, y: 0 });
+            g.fillStyle(color, 1);
+            g.fillRect(0, 0, 16, 16);
+            g.generateTexture(key, 16, 16);
+        };
+        createRectTexture('player', 0xffffff);
+        createRectTexture('enemy', 0x56D364);
     }
 
     create() {
@@ -22,40 +30,8 @@ export default class MainScene extends Phaser.Scene {
         this.isPaused = false;
 
         // player
-        this.player = this.physics.add.sprite(400, 300, 'player');
-        this.player
-            .setCollideWorldBounds(true)
-            .setDamping(true)
-            .setDrag(100)
-            .setMaxVelocity(200);
-
-        // input
-        this.cursors = this.input.keyboard?.createCursorKeys();
-        this.keys = this.input.keyboard?.addKeys('W,A,S,D');
-
-        this.joystick = this.joystick.add(this, {
-            x: this.cameras.main.width / 2,
-            y: this.cameras.main.height - 80,
-            radius: 50,
-            base: this.add.circle(0, 0, 50, 0x888888, 0.4),
-            thumb: this.add.circle(0, 0, 25, 0xffffff, 0.7),
-        });
-
-        // enemies
-        this.enemies = this.physics.add.group({
-            key: 'enemy',
-            repeat: 100,
-            setXY: { x: 50, y: 50, stepX: 20, stepY: 10 }
-        });
-        this.enemies.children.iterate((enemy) => {
-            return enemy
-                .setCollideWorldBounds(true)
-                .setBounce(1)
-                .setVelocity(
-                    Phaser.Math.Between(-50, 50),
-                    Phaser.Math.Between(-50, 50)
-                );
-        });
+        this.player = createPlayer(this);
+        this.enemies = createEnemies(this);
 
         // particles
         this.particleBurst = this.add.particles(0, 0, 'enemy', {
@@ -76,20 +52,53 @@ export default class MainScene extends Phaser.Scene {
             this
         );
 
-        // camera bounds
-        this.cameras.main.setBounds(0, 0, 640, 480);
+        // camera
+        this.cameras.main.setBounds(
+            0, 0,
+            GAME_CONFIG.CAMERA_BOUNDS.width,
+            GAME_CONFIG.CAMERA_BOUNDS.height
+        );
 
-        this.input.keyboard?.on('keydown-ESC', () => {
-            this.isPaused = !this.isPaused;
-            console.log('Pause:', this.isPaused);
-            if (this.isPaused) {
-                this.physics.pause();
-                this.scene.launch('PauseOverlay');
-            } else {
-                this.physics.resume();
-                this.scene.stop('PauseOverlay');
-            }
+        // input
+        this.cursors = this.input.keyboard?.createCursorKeys();
+        this.keys = this.input.keyboard?.addKeys('W,A,S,D');
+        this.joystick = createJoystick(this);
+
+        this.lastHorizontal = 0;
+        this.lastVertical = 0;
+
+        // movement
+        this.input.keyboard?.on('keydown-A', () => this.lastHorizontal = -1);
+        this.input.keyboard?.on('keydown-D', () => this.lastHorizontal = 1);
+        this.input.keyboard?.on('keyup-A', () => {
+            if (this.lastHorizontal === -1) this.lastHorizontal = this.keys.D.isDown ? 1 : 0;
         });
+        this.input.keyboard?.on('keyup-D', () => {
+            if (this.lastHorizontal === 1) this.lastHorizontal = this.keys.A.isDown ? -1 : 0;
+        });
+
+        this.input.keyboard?.on('keydown-W', () => this.lastVertical = -1);
+        this.input.keyboard?.on('keydown-S', () => this.lastVertical = 1);
+        this.input.keyboard?.on('keyup-W', () => {
+            if (this.lastVertical === -1) this.lastVertical = this.keys.S.isDown ? 1 : 0;
+        });
+        this.input.keyboard?.on('keyup-S', () => {
+            if (this.lastVertical === 1) this.lastVertical = this.keys.W.isDown ? -1 : 0;
+        });
+
+        // pause toggle
+        this.input.keyboard?.on('keydown-ESC', () => this.togglePause());
+    }
+
+    togglePause() {
+        this.isPaused = !this.isPaused;
+        if (this.isPaused) {
+            this.physics.pause();
+            this.scene.launch('PauseOverlay');
+        } else {
+            this.physics.resume();
+            this.scene.stop('PauseOverlay');
+        }
     }
 
     handlePlayerEnemyCollision(player, enemy) {
@@ -102,25 +111,18 @@ export default class MainScene extends Phaser.Scene {
     update() {
         if (this.isPaused) return;
 
-        const speed = 200;
-        let vx = 0, vy = 0;
-
-        if (this.cursors?.left.isDown || this.keys.A.isDown) vx -= 1;
-        if (this.cursors?.right.isDown || this.keys.D.isDown) vx += 1;
-        if (this.cursors?.up.isDown || this.keys.W.isDown) vy -= 1;
-        if (this.cursors?.down.isDown || this.keys.S.isDown) vy += 1;
+        const speed = GAME_CONFIG.PLAYER_SPEED;
+        let vx = this.lastHorizontal;
+        let vy = this.lastVertical;
 
         if (this.joystick.force > 0) {
             vx += this.joystick.forceX;
             vy += this.joystick.forceY;
         }
 
-        if (vx !== 0 || vy !== 0) {
+        if (vx || vy) {
             const len = Math.sqrt(vx * vx + vy * vy);
-            const velX = (vx / len) * speed;
-            const velY = (vy / len) * speed;
-
-            this.player?.setVelocity(velX, velY);
+            this.player?.setVelocity((vx / len) * speed, (vy / len) * speed);
         } else {
             this.player?.setVelocity(0, 0);
         }
